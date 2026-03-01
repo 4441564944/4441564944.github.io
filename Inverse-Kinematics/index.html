@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inverzní kinematika</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {
+            delimiters: [
+                {left: '$$', right: '$$', display: true},
+                {left: '$', right: '$', display: false}
+            ]
+        });"></script>
+    <style>
+        .ik-canvas {
+            width: 100%;
+            height: 420px;
+            display: block;
+            margin: 0 auto;
+            border-top: none;
+            border-radius: 0 0 3px 3px;
+            cursor: crosshair;
+            touch-action: none;
+        }
+
+        .tabs {
+            display: flex;
+            margin-top: 24px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px 0;
+            font: inherit;
+            font-size: 15px;
+            font-weight: 500;
+            color: #999;
+            background: #f0f0f0;
+            border: 1px solid #e8e8e8;
+            border-bottom: none;
+            cursor: pointer;
+            transition: color 0.15s, background 0.15s;
+        }
+
+        .tab-btn:first-child {
+            border-radius: 3px 0 0 0;
+        }
+
+        .tab-btn:last-child {
+            border-radius: 0 3px 0 0;
+            border-left: none;
+        }
+
+        .tab-btn.active {
+            color: #2d2d2d;
+            background: white;
+        }
+
+        .tab-btn:not(.active):hover {
+            color: #666;
+            background: #f5f5f5;
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Inverzní kinematika</h1>
+
+        <p>Inverzní kinematika (IK) řeší opačný problém než přímá kinematika: místo výpočtu pozice koncového bodu
+            z úhlů kloubů hledáme úhly kloubů tak, aby koncový bod (efektor) dosáhl zadané cílové pozice.</p>
+
+        <p>Pohybujte myší nad plátnem — rameno bude sledovat kurzor.</p>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="panel-2link">Analytické (2 klouby)</button>
+            <button class="tab-btn" data-tab="panel-fabrik">FABRIK (N kloubů)</button>
+        </div>
+
+        <div class="tab-panel active" id="panel-2link">
+            <canvas class="ik-canvas" id="canvas-2link"></canvas>
+
+            <div class="controls">
+                <div class="control-group">
+                    <label for="l1">Délka ramene L₁:</label>
+                    <input type="range" id="l1" min="40" max="200" value="120" step="5">
+                    <span class="value" id="l1val">120</span>
+                </div>
+
+                <div class="control-group">
+                    <label for="l2">Délka předloktí L₂:</label>
+                    <input type="range" id="l2" min="40" max="200" value="100" step="5">
+                    <span class="value" id="l2val">100</span>
+                </div>
+            </div>
+
+            <div class="info">
+                <strong>Metoda:</strong> Analytické řešení pomocí kosinové věty. Pro 2 segmenty existuje
+                uzavřený vzorec — ze vzdálenosti $d$ cíle od báze a délek $L_1$, $L_2$ přímo spočteme úhel
+                v kloubu.
+            </div>
+        </div>
+
+        <div class="tab-panel" id="panel-fabrik">
+            <canvas class="ik-canvas" id="canvas-fabrik"></canvas>
+
+            <div class="controls">
+                <div class="control-group">
+                    <label for="segCount">Počet segmentů:</label>
+                    <input type="range" id="segCount" min="3" max="20" value="8" step="1">
+                    <span class="value" id="segCountVal">8</span>
+                </div>
+
+                <div class="control-group">
+                    <label for="segLen">Délka segmentu:</label>
+                    <input type="range" id="segLen" min="10" max="60" value="30" step="2">
+                    <span class="value" id="segLenVal">30</span>
+                </div>
+            </div>
+
+            <div class="info">
+                <strong>Metoda:</strong> FABRIK (Forward And Backward Reaching Inverse Kinematics) — iterativní
+                algoritmus, který střídavě táhne řetězec od efektoru k cíli a pak ho vrací zpět k bázi. Konverguje
+                velmi rychle (typicky 5–10 iterací).
+            </div>
+        </div>
+
+        <h2>Matematický model</h2>
+
+        <p>Pro dvousegmentové rameno s délkami $L_1$ a $L_2$ a vzdáleností cíle $d$ od báze
+            určíme úhel v kloubu pomocí kosinové věty:</p>
+
+        $$\cos \alpha = \frac{L_1^2 + d^2 - L_2^2}{2 \, L_1 \, d}$$
+
+        <p>Úhel prvního segmentu vůči přímce k cíli je pak $\alpha$, z čehož přímo plyne
+            pozice kloubu i efektoru. Řešení existuje právě tehdy, když $|L_1 - L_2| \leq d \leq L_1 + L_2$.</p>
+
+        <p>Pro řetězce s více klouby analytické řešení neexistuje (systém je podurčený).
+            Algoritmus FABRIK tento problém obchází iterativním přístupem: v každé iteraci
+            provede průchod od efektoru k bázi a zpět, přičemž zachovává délky segmentů.</p>
+
+        <hr>
+
+        <p><a href="../index.html">← Zpět na hlavní stránku</a></p>
+    </div>
+
+    <script defer src="index.js"></script>
+    <script>
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab).classList.add('active');
+                window.dispatchEvent(new Event('resize'));
+            });
+        });
+    </script>
+</body>
+
+</html>

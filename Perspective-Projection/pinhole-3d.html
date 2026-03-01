@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dírková kamera - 3D vizualizace</title>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        body {
+            background: #0e0e1a;
+            color: #c8c8d8;
+        }
+
+        h1 {
+            color: #e0e0ee;
+        }
+
+        p, label, .value {
+            color: #9999aa;
+        }
+
+        a {
+            color: #aaaacc;
+            text-decoration-color: #444466;
+        }
+
+        a:hover {
+            text-decoration-color: #aaaacc;
+        }
+
+        hr {
+            border-top-color: #2a2a3e;
+        }
+
+        #canvas3d {
+            width: 100%;
+            height: 500px;
+            display: block;
+            margin: 24px auto;
+            background: #0e0e1a;
+            border: 1px solid #2a2a3e;
+            touch-action: none;
+        }
+
+        .info {
+            background: #14142a;
+            border-color: #2a2a3e;
+            color: #9999aa;
+        }
+
+        input[type="range"] {
+            accent-color: #6666aa;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Dírková kamera - 3D vizualizace</h1>
+
+        <p>Interaktivní 3D model dírkové kamery. Můžete scénu otáčet myší nebo tahem prstem.</p>
+
+        <canvas id="canvas3d"></canvas>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="objectDistance3d">Vzdálenost objektu:</label>
+                <input type="range" id="objectDistance3d" min="75" max="300" value="170" step="5">
+                <span class="value" id="distanceValue3d">170</span>
+            </div>
+
+            <div class="control-group">
+                <label for="objectSize3d">Velikost objektu:</label>
+                <input type="range" id="objectSize3d" min="40" max="140" value="90" step="5">
+                <span class="value" id="sizeValue3d">90</span>
+            </div>
+        </div>
+
+        <div class="info">
+            <strong>Ovládání:</strong> Táhněte myší pro otáčení kamery. Kolečko myši pro přiblížení.<br>
+            <strong>Vzorec:</strong> <span id="formula3d"></span>
+        </div>
+
+        <hr>
+
+        <p><a href="index.html">← Zpět na článek</a></p>
+    </div>
+
+    <script defer src="pinhole-3d.js"></script>
+</body>
+
+</html>

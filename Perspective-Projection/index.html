@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perpektivní zobrazení</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {
+            delimiters: [
+                {left: '$$', right: '$$', display: true},
+                {left: '$', right: '$', display: false}
+            ]
+        });"></script>
+    <style>
+        #canvas3d {
+            width: 100%;
+            height: 500px;
+            display: block;
+            margin: 0 auto;
+            background: #0e0e1a;
+            border: 1px solid #e8e8e8;
+            border-top: none;
+            border-radius: 0 0 3px 3px;
+            touch-action: none;
+        }
+
+        #canvas {
+            border-top: none;
+            border-radius: 0 0 3px 3px;
+            margin: 0 auto;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin-top: 24px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px 0;
+            font: inherit;
+            font-size: 15px;
+            font-weight: 500;
+            color: #999;
+            background: #f0f0f0;
+            border: 1px solid #e8e8e8;
+            border-bottom: none;
+            cursor: pointer;
+            transition: color 0.15s, background 0.15s;
+        }
+
+        .tab-btn:first-child {
+            border-radius: 3px 0 0 0;
+        }
+
+        .tab-btn:last-child {
+            border-radius: 0 3px 0 0;
+            border-left: none;
+        }
+
+        .tab-btn.active {
+            color: #2d2d2d;
+            background: white;
+        }
+
+        .tab-btn:not(.active):hover {
+            color: #666;
+            background: #f5f5f5;
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Perspektivní zobrazení</h1>
+
+        <p>Pro pochopení perspektivní projekce, začneme popisem dírkové kamery, která představuje matematický model
+            přístroje pro záznam reálného obrazu. Dírkovou kameru je samozřejmě možné vytvořit i fyzicky, ostatně jde o
+            primitivní fotografický přístroj.</p>
+
+        <p>Naše úloha je jednoduchá, a to je zaznamenat obraz reálného světa, který existuje ve třech rozměrech do
+            dvourozměrného prostoru představovaném plochou papíru nebo obrazovky.</p>
+
+        <p>To jak dírková kamera projektuje reálný svět do plochy se velmi podobá tomu, jak zaznamenáváme svět našima
+            očima nebo fotoaparátem. Proto ostatně mluvíme o <em>realismu</em>.</p>
+
+        <p>Dírkovou kameru si představme jako krabici s otvorem ve středu jedné ze stran. Touto dírkou vstupují do
+            vnitřku kamery světelné paprsky, které vykreslí na protejší stěně obraz.</p>
+
+        <p>Pro výukové účely můžeme zajít ještě dále a kameru zjednodušit do dvou rozměrů, s tím že projekce tedy bude
+            do jednoho rozměru. Můžeme si to představit tak, že se kameru a díváme ze strany (boční řez).</p>
+
+        <h2>Matematický model</h2>
+
+        <p>Dírková kamera funguje na principu <strong>podobných trojúhelníků</strong>. Světelný paprsek prochází dírkou
+            a vytváří na obrazové ploše obraz, který je převrácený a zmenšený.</p>
+
+        <p>Označme:</p>
+        <ul>
+            <li>$h$ = velikost objektu (výška)</li>
+            <li>$d$ = vzdálenost objektu od dírky</li>
+            <li>$h'$ = velikost obrazu</li>
+            <li>$f$ = ohnisková vzdálenost (vzdálenost obrazové plochy od dírky)</li>
+        </ul>
+
+        <p>Z podobnosti trojúhelníků vyplývá základní vztah:</p>
+
+        $$\frac{h'}{h} = \frac{f}{d}$$
+
+        <p>Z tohoto vztahu můžeme vyjádřit velikost obrazu:</p>
+
+        $$h' = h \cdot \frac{f}{d}$$
+
+        <p>Tento vzorec nám říká, že velikost obrazu je přímo úměrná velikosti objektu a ohniskové vzdálenosti, ale
+            nepřímo úměrná vzdálenosti objektu. Čím je objekt dále, tím je jeho obraz menší.</p>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="panel-2d">2D řez</button>
+            <button class="tab-btn" data-tab="panel-3d">3D model</button>
+        </div>
+
+        <div class="tab-panel active" id="panel-2d">
+            <canvas id="canvas" width="800" height="400"></canvas>
+
+            <div class="controls">
+                <div class="control-group">
+                    <label for="objectDistance">Vzdálenost objektu:</label>
+                    <input type="range" id="objectDistance" min="75" max="300" value="170" step="5">
+                    <span class="value" id="distanceValue">170</span>
+                </div>
+
+                <div class="control-group">
+                    <label for="objectSize">Velikost objektu:</label>
+                    <input type="range" id="objectSize" min="40" max="140" value="90" step="5">
+                    <span class="value" id="sizeValue">90</span>
+                </div>
+            </div>
+
+            <div class="info">
+                <strong>Vzorec:</strong> Velikost obrazu = Velikost objektu × (Ohnisková vzdálenost / Vzdálenost
+                objektu)<br>
+                <span id="formula"></span>
+            </div>
+        </div>
+
+        <div class="tab-panel" id="panel-3d">
+            <canvas id="canvas3d"></canvas>
+
+            <div class="controls">
+                <div class="control-group">
+                    <label for="objectDistance3d">Vzdálenost objektu:</label>
+                    <input type="range" id="objectDistance3d" min="75" max="300" value="170" step="5">
+                    <span class="value" id="distanceValue3d">170</span>
+                </div>
+
+                <div class="control-group">
+                    <label for="objectSize3d">Velikost objektu:</label>
+                    <input type="range" id="objectSize3d" min="40" max="140" value="90" step="5">
+                    <span class="value" id="sizeValue3d">90</span>
+                </div>
+            </div>
+
+            <div class="info">
+                <strong>Vzorec:</strong> <span id="formula3d"></span>
+            </div>
+        </div>
+
+        <h2>Příklad</h2>
+
+        <p>Pomocí interaktivní vizualizace výše můžete experimentovat s hodnotami. Například:</p>
+
+        <p>Pokud máme objekt vysoký $h = 90$ jednotek vzdálený $d = 170$ jednotek od dírky a ohnisková vzdálenost je $f
+            = 200$ jednotek, velikost obrazu bude:</p>
+
+        $$h' = 90 \cdot \frac{200}{170} \approx 105.9$$
+
+        <p>Všimněte si, že v tomto případě je obraz větší než původní objekt ($h' > h$). To se děje, protože ohnisková
+            vzdálenost ($f$) je větší než vzdálenost objektu ($d$). Pokud však objekt posuneme dále, například na $d =
+            300$, obraz se zmenší:</p>
+
+        $$h' = 90 \cdot \frac{200}{300} = 60$$
+
+        <p>Tento princip je základem pro pochopení perspektivy v počítačové grafice, kde všechny objekty transformujeme
+            podobným způsobem, abychom vytvořili realistický trojrozměrný obraz na dvourozměrné obrazovce.</p>
+
+        <hr>
+
+        <p><a href="../index.html">← Zpět na hlavní stránku</a></p>
+    </div>
+
+    <script src="index.js"></script>
+    <script defer src="pinhole-3d.js"></script>
+    <script>
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab).classList.add('active');
+                window.dispatchEvent(new Event('resize'));
+            });
+        });
+    </script>
+</body>
+
+</html>
