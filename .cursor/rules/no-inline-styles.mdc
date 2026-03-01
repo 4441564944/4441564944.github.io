@@ -1,0 +1,23 @@
+---
+description: Never use inline <style> blocks in HTML files — always use external CSS
+globs: **/*.html
+alwaysApply: false
+---
+
+# No inline CSS in HTML
+
+Never put `<style>` blocks inside HTML files. Always use external `.css` files included via `<link>`.
+
+- Shared styles go in the root `style.css`
+- Page-specific styles go in a `style.css` in the same directory as the HTML
+- Theme variants use a descriptive name like `style-dark.css`
+
+```html
+<!-- BAD -->
+<style>
+    .my-class { color: red; }
+</style>
+
+<!-- GOOD -->
+<link rel="stylesheet" href="style.css">
+```

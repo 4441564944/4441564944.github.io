@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mřížkové systémy — Obdélníková vs šestiúhelníková mřížka</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {
+            delimiters: [
+                {left: '$$', right: '$$', display: true},
+                {left: '$', right: '$', display: false}
+            ]
+        });"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Mřížkové systémy</h1>
+
+        <p>Mřížky rozdělují rovinu na diskrétní buňky. Dvě nejběžnější pravidelné dláždění jsou
+            <strong>obdélníkové</strong> (čtvercové) a <strong>šestiúhelníkové</strong> (hexagonální).
+            Každé má odlišné matematické vlastnosti, díky kterým se hodí pro jiné aplikace.</p>
+
+        <p>Klikněte na buňku pro výběr. Pohybujte myší pro zobrazení souřadnic a vzdálenosti
+            od vybrané buňky. Sousedé vybrané buňky jsou zvýrazněni tyrkysově.</p>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="panel-rect">Obdélníková</button>
+            <button class="tab-btn" data-tab="panel-hex">Šestiúhelníková</button>
+        </div>
+
+        <div class="tab-panel active" id="panel-rect">
+            <canvas class="grid-canvas" id="canvas-rect"></canvas>
+
+            <div class="controls">
+                <div class="control-group">
+                    <label>
+                        <input type="checkbox" id="neighbors8"> 8-okolí (Mooreovo)
+                    </label>
+                </div>
+            </div>
+
+            <p class="status" id="status-rect">Klikněte na buňku pro výběr.</p>
+        </div>
+
+        <div class="tab-panel" id="panel-hex">
+            <canvas class="grid-canvas" id="canvas-hex"></canvas>
+
+            <p class="status" id="status-hex">Klikněte na buňku pro výběr.</p>
+        </div>
+
+        <h2>Souřadnicové systémy</h2>
+
+        <p><strong>Obdélníková mřížka</strong> — buňky adresujeme sloupcem a řádkem $(c, r)$.
+            Převod na pixelové souřadnice je triviální:</p>
+
+        $$x = c \cdot s, \quad y = r \cdot s$$
+
+        <p>kde $s$ je velikost buňky.</p>
+
+        <p><strong>Šestiúhelníková mřížka (pointy-top, axiální souřadnice)</strong> — buňky používají
+            dvě osy $(q, r)$ svírající úhel 60°. Převod na pixely:</p>
+
+        $$x = s\left(\sqrt{3}\, q + \frac{\sqrt{3}}{2}\, r\right), \quad y = s \cdot \frac{3}{2}\, r$$
+
+        <p>Inverzní převod (pixel → hex) vyžaduje zaokrouhlení v krychlových souřadnicích
+            $(q, r, s)$, kde $q + r + s = 0$.</p>
+
+        <h2>Metriky vzdálenosti</h2>
+
+        <p><strong>Obdélníková mřížka</strong> má dvě přirozené metriky:</p>
+
+        <ul>
+            <li><strong>Manhattan</strong> (4-souvislá): $d = |{\Delta c}| + |{\Delta r}|$ — kosočtvercové
+                vrstevnice</li>
+            <li><strong>Čebyšev</strong> (8-souvislá): $d = \max(|{\Delta c}|, |{\Delta r}|)$ — čtvercové
+                vrstevnice</li>
+        </ul>
+
+        <p><strong>Šestiúhelníková mřížka</strong> má jedinou přirozenou metriku (v krychlových souřadnicích):</p>
+
+        $$d = \frac{|{\Delta q}| + |{\Delta r}| + |{\Delta s}|}{2}$$
+
+        <p>Výsledkem jsou šestiúhelníkové vrstevnice — vzdálenost je rovnoměrná ve všech 6 směrech.</p>
+
+        <h2>Srovnání</h2>
+
+        <table>
+            <tr>
+                <th></th>
+                <th>Obdélníková</th>
+                <th>Šestiúhelníková</th>
+            </tr>
+            <tr>
+                <td><strong>Sousedé</strong></td>
+                <td>4 (nebo 8 s diagonálami)</td>
+                <td>6</td>
+            </tr>
+            <tr>
+                <td><strong>Rovnoměrnost vzdálenosti</strong></td>
+                <td>Nerovnoměrná — diagonála ≠ hlavní směr</td>
+                <td>Rovnoměrná — všichni sousedé stejně daleko</td>
+            </tr>
+            <tr>
+                <td><strong>Matematika souřadnic</strong></td>
+                <td>Triviální — přímé indexování pole</td>
+                <td>Střední — axiální nebo krychlové souřadnice</td>
+            </tr>
+            <tr>
+                <td><strong>Úložiště</strong></td>
+                <td>2D pole</td>
+                <td>Pole s offsetem nebo hash mapa</td>
+            </tr>
+            <tr>
+                <td><strong>Směrová preference</strong></td>
+                <td>Preference os</td>
+                <td>Žádný preferovaný směr</td>
+            </tr>
+            <tr>
+                <td><strong>Vhodné pro</strong></td>
+                <td>Obrázky, obrazovky, tabulky</td>
+                <td>Hry, simulace, terén</td>
+            </tr>
+        </table>
+
+        <hr>
+
+        <p><a href="../index.html">← Zpět na hlavní stránku</a></p>
+    </div>
+
+    <script defer src="index.js"></script>
+    <script>
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab).classList.add('active');
+                window.dispatchEvent(new Event('resize'));
+            });
+        });
+    </script>
+</body>
+
+</html>

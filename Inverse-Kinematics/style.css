@@ -1,0 +1,10 @@
+.ik-canvas {
+    width: 100%;
+    height: 420px;
+    display: block;
+    margin: 0 auto;
+    border-top: none;
+    border-radius: 0 0 3px 3px;
+    cursor: crosshair;
+    touch-action: none;
+}
