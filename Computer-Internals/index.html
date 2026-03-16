@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Počítače</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {
+            delimiters: [
+                {left: '$$', right: '$$', display: true},
+                {left: '$', right: '$', display: false}
+            ]
+        });"></script>
+    <link rel="stylesheet" href="style.css">
+    <script src="../navigation.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Model Počítače</h1>
+
+        <H2>Úvod</H2>
+        Tato série článků bude o tom jak postavit jednoduchý počítač ze základních elektronických součástek.
+        Několik částí však budeme popisovat jednoduchý model počítače, proto lze tutuo sérii brát i jako úvod
+        do simulace (emulace) jednoduchého 4/8 bitového počítače.
+
+        První setkání s počítačem je dnes setkání se strojem, co je tak komplexní, že málkodo má
+        dnes možnost chápat jak funguje na té nejzákladnější úrovni. I zkušení programátoři dnes
+        často neví, jak na hardwarové úrovní vše probíhá. ještě generace 80. a částěčně i 90. let
+        měla možnost se setkat s přímým programováním hardwaru a to především na 8 bitových počítačích
+        jako byla Amiga nebo Atari.
+
+        tato doba je ale asi nenávratně pryč a pokud se dnes chcete dozvědět něco více o hardwaru pro ketrý
+        programujete
+        musíte se prodrak vyskoúrovňovou džunglí zpět k nízkoúrovnovým kořenům.
+
+        A to je náš cíl, vrátit se ke kořenům a zjistit, že i přes všechnu komplexnost je základní fungování
+        počítače stále možné pochopit. Začenem popisem počítače, obrazně řečeno, s tužkou a čistým listem papíru.
+
+        <h2>Sčítání binárních čísel</h2>
+
+        (Aritmetika Logických Obvodů)
+
+        Pro sčítání binárních čísel se používá digitální {opravdu jen digitální?} elektronický obvod nazývaný *čítač*
+        (*adder* nebo *summer*).
+
+        Pro začátek si ukážeme *half-adder* a *full-adder*, i když existují i další.
+
+        <h3>Half-Adder</h3>
+
+        Half-Adder umí sčíst jen dvě 1-bitová binární čísla to je $$ {0, 1} $$.
+
+        <p>
+            Představit si ho můžeme jako krabičku se dvěma výstupy a dvěma výstupy.
+            na vstupi jsou binární číslice A a B a na Výstupu je suma S a carry C.
+            Carry slouží k uchování hodnoty 1, pokud suma přeteče.
+        </p>
+
+        <p>
+            <strong>Příklad:</strong> Pokud sečteme binární čísla A=1 + B=0, A=0 + B=1, A=0 + B=0, pak S nepřeteče a
+            obsahuje přímo výsledek a C=0. Pokud ale sečteme čísla A=1 + B=1 pak S=0, ale C=1
+            což značí, že došlo k přetečení.
+
+            Prakticky S bude logické hradlo XOR a C bude logicé hradlo AND
+        </p>
+
+        Pravdivostní tabulka pro Half Adder
+        <table>
+            <tr>
+                <td colspan="2">INPUTS</td>
+                <td colspan="2">OUTPUTS</td>
+            </tr>
+            <tr>
+                <td>$$ A $$</td>
+                <td>$$ B $$</td>
+                <td>$$ C_{XOR} $$</td>
+                <td>$$ S_{AND} $$</td>
+            </tr>
+            <tr>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+                <td>1</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+        </table>
+
+        <div style="text-align: center; margin: 30px 0;">
+            <div style="display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; margin: 20px 0;">
+                <div>
+                    <img src="xor-gate.svg" alt="XOR Gate" style="width: 100px; height: auto;">
+                    <p style="margin-top: 8px; font-size: 14px; color: #666;">XOR hradlo - výpočet sumy (S)</p>
+                </div>
+                <div>
+                    <img src="and-gate.svg" alt="AND Gate" style="width: 100px; height: auto;">
+                    <p style="margin-top: 8px; font-size: 14px; color: #666;">AND hradlo - výpočet carry (C)</p>
+                </div>
+            </div>
+            <p style="margin-top: 16px; font-size: 12px; color: #999;">Diagramy hradel: <a
+                    href="https://commons.wikimedia.org/" target="_blank" style="color: #999;">Wikimedia Commons</a>,
+                Public Domain</p>
+        </div>
+
+        Poznámky:
+        <ul>
+            <li>Přidat odkaz na projekt OBERON od Niklaus Wirth</li>
+
+            <li>Stibitz vynálezce 1-bit adder; také dělal umění na počítači Amiga
+                http://stibitz.denison.edu/art.html
+            </li>
+        </ul>
+        </ul>
+
+
+
+    </div>
+</body>
+
+</html>
