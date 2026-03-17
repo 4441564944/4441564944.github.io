@@ -1,4 +1,4 @@
-// Global navigation with theme switcher
+// Main navigation header with theme switcher.
 (function() {
     // Determine base path
     const path = window.location.pathname;
@@ -7,8 +7,8 @@
     
     // Navigation items
     const navItems = [
-        { href: 'index.html', label: 'Home' },
-        { href: 'about.html', label: 'About' }
+        { href: '/', label: 'Home' },
+        { href: '/about.html', label: 'About' }
     ];
     
     // Create navigation
@@ -21,12 +21,12 @@
     navItems.forEach(item => {
         const li = document.createElement('li');
         const a = document.createElement('a');
-        a.href = basePath + item.href;
+        a.href = item.href;
         a.textContent = item.label;
         
         // Mark current page as active
-        if (path.includes(item.href) || 
-            (item.href === 'index.html' && (path.endsWith('/') || path.endsWith('index.html')))) {
+        if ((item.href === '/' && (path.endsWith('/') || path.endsWith('index.html'))) ||
+            (item.href !== '/' && path.includes(item.href))) {
             a.className = 'active';
         }
         
